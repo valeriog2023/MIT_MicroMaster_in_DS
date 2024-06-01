@@ -20,8 +20,9 @@ For PyTorch, follow the instructions on https://pytorch.org/to install from pip 
 ```
 python3 -m venv ML
 source ML/bin/activate
-pip3 install --upgrade pip'
+pip3 install --upgrade pip
 pip3 install numpy matplotlib scipy tqdm scikit-learn
+pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
 
 deactivate
 ```
@@ -40,6 +41,8 @@ conda env list
 conda activate ML
 !
 conda install  numpy matplotlib scipy tqdm scikit-learn
+conda install pytorch torchvision torchaudio pytorch-cuda=12.1 -c pytorch -c nvidia
+conda install typing-extensions
 
 conda deactivate
 !
