@@ -1,13 +1,36 @@
+#
+#  ORIGINAL FUNCTION
+#
+# def get_sum_metrics(predictions, metrics=[]):
+#     for i in range(3):
+#         metrics.append(lambda x,i=i: x + i)
+# 
+#     sum_metrics = 0
+#     for metric in metrics:
+#         sum_metrics += metric(predictions)
+# 
+#     return sum_metrics
+
+
+#
+#  CORRECT FUNCTION
+#
 def get_sum_metrics(predictions, metrics=[]):
-    for i in range(3):
-        metrics.append(lambda x: x + i)
+
+
+    ev_functions = list(metrics)
+    def make_closure(i):      
+      return lambda x: x + i
+     
+
+    for i in range(3):        
+        ev_functions.append(make_closure(i))
 
     sum_metrics = 0
-    for metric in metrics:
+    for metric in ev_functions:
         sum_metrics += metric(predictions)
 
     return sum_metrics
-
 
 def main():
     print(get_sum_metrics(0))  # Should be (0 + 0) + (0 + 1) + (0 + 2) = 3
