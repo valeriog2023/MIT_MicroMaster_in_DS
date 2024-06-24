@@ -65,7 +65,7 @@ def hinge_loss_full(feature_matrix, labels, theta, theta_0):
     loss_vector = []
     for index in range(feature_matrix.shape[0]):
         loss_vector.append(hinge_loss_single(feature_matrix[index],labels[index], theta, theta_0))
-    
+
     return sum(loss_vector)/len(loss_vector)
 
 
@@ -94,7 +94,15 @@ def perceptron_single_step_update(
         the updated offset parameter `theta_0` as a floating point number
     """
     # Your code here
-    raise NotImplementedError
+    score = label * (current_theta.dot(feature_vector) + current_theta_0)
+    if score <= 0:
+        new_theta = current_theta + label * feature_vector
+        new_theta_0 = current_theta_0 + label
+    else:
+        new_theta = current_theta
+        new_theta_0 = current_theta_0
+    #
+    return (new_theta,new_theta_0)
 
 
 
@@ -120,14 +128,23 @@ def perceptron(feature_matrix, labels, T):
         the offset parameter `theta_0` as a floating point number
             (found also after T iterations through the feature matrix).
     """
-    # Your code here
-    raise NotImplementedError
+    #
+    # the get_order function, reads a file called something like: N.txt
+    # where N is the number of rows/poins in the matrix/data
+    # the file  returns a pre-established order of indexes and we need to run the perceptron algorithm
+    # following the returned order.. this is for verification; in practice we would randomize the points
+    # in the dataset
+    nsamples = feature_matrix.shape[0]
+    #
+    # we also initialize theta and theta_0 to all zeros
+    theta = np.zeros(feature_matrix.shape[1])
+    theta_0 = 0
+    #
     for t in range(T):
         for i in get_order(nsamples):
-            # Your code here
-            raise NotImplementedError
+             (theta, theta_0) = perceptron_single_step_update(feature_matrix[i],labels[i], theta, theta_0)
     # Your code here
-    raise NotImplementedError
+    return (theta,theta_0)
 
 
 
@@ -157,8 +174,23 @@ def average_perceptron(feature_matrix, labels, T):
         the average offset parameter `theta_0` as a floating point number
             (averaged also over T iterations through the feature matrix).
     """
+    #
+    # so this function returns an average of all theta,theta_0 computed during the N * T iterations
+    nsamples = feature_matrix.shape[0]
+    #
+    # we also initialize theta and theta_0 to all zeros
+    theta = np.zeros(feature_matrix.shape[1])
+    theta_0 = 0
+    theta_list = [  ]
+    theta_0_list = [ ]
+    #
+    for t in range(T):
+        for i in get_order(nsamples):
+             (theta, theta_0) = perceptron_single_step_update(feature_matrix[i],labels[i], theta, theta_0)
+             theta_list.append(theta)
+             theta_0_list.append(theta_0)
     # Your code here
-    raise NotImplementedError
+    return (np.array(theta_list).mean(axis=0), np.array(theta_0_list).mean())
 
 
 def pegasos_single_step_update(
