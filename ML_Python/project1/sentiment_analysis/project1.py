@@ -184,7 +184,7 @@ def average_perceptron(feature_matrix, labels, T):
     theta_list = [  ]
     theta_0_list = [ ]
     #
-    for t in range(T):
+    for _ in range(T):
         for i in get_order(nsamples):
              (theta, theta_0) = perceptron_single_step_update(feature_matrix[i],labels[i], theta, theta_0)
              theta_list.append(theta)
@@ -220,9 +220,17 @@ def pegasos_single_step_update(
         real valued number with the value of theta_0 after the old updated has
         completed.
     """
-    # Your code here
-    raise NotImplementedError
-
+    # 
+    # This algorithm is part of stochastic gradient descent algorithms
+    score = label * (theta.dot(feature_vector) + theta_0)
+    if score <= 1:
+        new_theta = (1 - L*eta) * theta + eta * label * feature_vector
+        new_theta_0 = theta_0 + eta * label
+    else:
+        new_theta =  (1 - L*eta) * theta
+        new_theta_0 = theta_0
+    #
+    return (new_theta,round(new_theta_0,7))
 
 
 def pegasos(feature_matrix, labels, T, L):
@@ -252,8 +260,24 @@ def pegasos(feature_matrix, labels, T, L):
         the value of the theta_0, the offset classification parameter, found
         after T iterations through the feature matrix.
     """
+    #
+    # so this function returns an average of all theta,theta_0 computed during the N * T iterations
+    nsamples = feature_matrix.shape[0]
+    #
+    # we also initialize theta and theta_0 to all zeros
+    theta = np.zeros(feature_matrix.shape[1])
+    theta_0 = 0
+    #
+    t = 1
+    from math import sqrt
+    for _ in range(T):
+        for i in get_order(nsamples):
+             eta = 1/sqrt(t)
+             (theta, theta_0) = pegasos_single_step_update(feature_matrix[i],labels[i],L, eta, theta, theta_0)
+             t += 1 
     # Your code here
-    raise NotImplementedError
+    return (theta, theta_0)
+
 
 
 

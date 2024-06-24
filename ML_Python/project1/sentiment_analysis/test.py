@@ -40,7 +40,8 @@ def check_real(ex_name, f, exp_res, *args):
 
 def equals(x, y):
     if type(y) == np.ndarray:
-        return (x == y).all()
+        return  np.allclose(x,y)
+        #return (x == y).all()
     return x == y
 
 def check_tuple(ex_name, f, exp_res, *args, **kwargs):
@@ -56,7 +57,7 @@ def check_tuple(ex_name, f, exp_res, *args, **kwargs):
         log(red("FAIL"), ex_name, ": expected a tuple of size ", len(exp_res), " but got tuple of size", len(res))
         return True
     if not all(equals(x, y) for x, y in zip(res, exp_res)):
-        log(red("FAIL"), ex_name, ": incorrect answer. Expected", exp_res, ", got: ", res)
+        log(red("FAIL"), ex_name, ": incorrect answer. Expected\n", exp_res, ", \ngot: \n", res)
         return True
 
 def check_array(ex_name, f, exp_res, *args):
@@ -285,6 +286,40 @@ def check_pegasos_single_update():
     L = 0.2
     eta = 0.1
     exp_res = (np.array([-0.88, 1.18]), -1.9)
+    if check_tuple(
+            ex_name, p1.pegasos_single_step_update,
+            exp_res,
+            feature_vector, label, L, eta, theta, theta_0):
+        return
+
+    log(green("PASS"), ex_name, "")
+
+
+    feature_vector = np.array([ 0.0828868, -0.10646208, 0.38343851, -0.01120626, 0.17100637, -0.48162327, -0.39878723, 0.47473096, 0.0726876, 0.23776261])
+    label = 1
+    L = 0.9219988080185197
+    eta = 0.06285088414062623
+    theta = np.array([-0.19790459, 0.237979,-0.08821794, -0.3205563, -0.17074328, 0.48665944, 0.01888054, -0.2812287, -0.26312399,  0.4170255 ])
+    theta_0 = 2.0411281766814042
+    exp_res = ( np.array([-0.1864363, 0.2241885, -0.0831058, -0.3019806, -0.1608490, 0.4584583, 0.0177864, -0.2649319, -0.2478764, 0.3928595]), 2.0411282 ) 
+    if check_tuple(
+            ex_name, p1.pegasos_single_step_update,
+            exp_res,
+            feature_vector, label, L, eta, theta, theta_0):
+        return
+
+    log(green("PASS"), ex_name, "")
+
+
+    feature_vector = np.array([ 0.47409908,  0.39364394, -0.368247,    0.17532051, -0.02671259,  0.39627102,
+                   0.43695843,  0.27308634, -0.25161927, -0.28775879])
+    label = -1
+    L = 0.18243207167148656
+    eta = 0.23058595970431084
+    theta = np.array([-0.21322926, -0.37256956, -0.01975689, -0.14113785, -0.04824861, -0.08888422,
+                     -0.14102607, -0.096532, 0.21157628,  0.32441515])
+    theta_0 = -0.4662720332863288
+    exp_res = ( np.array([-0.3135801, -0.4476657, 0.0659868, -0.1756272, -0.0400594, -0.1765197, -0.2358501, -0.1554411, 0.2606959, 0.3771213]), -0.6968580 ) 
     if check_tuple(
             ex_name, p1.pegasos_single_step_update,
             exp_res,
