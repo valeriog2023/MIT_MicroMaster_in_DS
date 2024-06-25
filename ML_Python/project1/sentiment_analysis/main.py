@@ -14,11 +14,22 @@ train_texts, train_labels = zip(*((sample['text'], sample['sentiment']) for samp
 val_texts, val_labels = zip(*((sample['text'], sample['sentiment']) for sample in val_data))
 test_texts, test_labels = zip(*((sample['text'], sample['sentiment']) for sample in test_data))
 
-dictionary = p1.bag_of_words(train_texts)
+#
+# originally remove_stopword was set to False across all the exercise except for the last
+# where we want to verify how Pegasos improves if we remove these words
+# Accuracy goes up when we remove stopwords!
+dictionary = p1.bag_of_words(train_texts,remove_stopword=True)
 
-train_bow_features = p1.extract_bow_feature_vectors(train_texts, dictionary)
-val_bow_features = p1.extract_bow_feature_vectors(val_texts, dictionary)
-test_bow_features = p1.extract_bow_feature_vectors(test_texts, dictionary)
+#
+#
+# Same here we initially start we binarize=True
+# this gives us data points based with only ones and zeros
+# in the end we set binarize=False so each word will be reported based on the 
+# number of times it actually occurs
+# Note that accuracy actually goes down!! when we don't binarize..
+train_bow_features = p1.extract_bow_feature_vectors(train_texts, dictionary, binarize=False)
+val_bow_features = p1.extract_bow_feature_vectors(val_texts, dictionary, binarize=False)
+test_bow_features = p1.extract_bow_feature_vectors(test_texts, dictionary, binarize=False)
 
 #-------------------------------------------------------------------------------
 # Problem 5
@@ -139,7 +150,6 @@ utils.plot_tune_results('Pegasos', 'L', Ls, *peg_tune_results_L)
 # L = 0.01
 #-------------------------------------------------------------------------------
 
-# Your code here
 T = 25
 L = 0.01
 avg_peg_train_accuracy, avg_peg_test_accuracy = \

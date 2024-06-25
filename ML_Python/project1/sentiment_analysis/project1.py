@@ -220,7 +220,7 @@ def pegasos_single_step_update(
         real valued number with the value of theta_0 after the old updated has
         completed.
     """
-    # 
+    #
     # This algorithm is part of stochastic gradient descent algorithms
     score = label * (theta.dot(feature_vector) + theta_0)
     #
@@ -276,7 +276,7 @@ def pegasos(feature_matrix, labels, T, L):
         for i in get_order(nsamples):
              eta = 1/sqrt(t)
              (theta, theta_0) = pegasos_single_step_update(feature_matrix[i],labels[i],L, eta, theta, theta_0)
-             t += 1 
+             t += 1
     # Your code here
     return (theta, theta_0)
 
@@ -318,16 +318,16 @@ def classify(feature_matrix, theta, theta_0):
     # we run the dot product of each row in the feature matrix with theta and add theta_0
     #dot_products = feature_matrix.dot(theta) + theta_0
     # Apply the linear classifier decision rule
-    # classifications = np.where(dot_products > 0, 1, -1)    
-    # return classifications    
+    # classifications = np.where(dot_products > 0, 1, -1)
+    # return classifications
     dot_products = []
     for v in feature_matrix:
         if (v.dot(theta) + theta_0) > 0.0000001:
             dot_products.append(1)
-        else:    
+        else:
             dot_products.append(-1)
     return np.array(dot_products)
-    
+
 
 
 def classifier_accuracy(
@@ -366,7 +366,7 @@ def classifier_accuracy(
     try:
         # Call the classifier with the train dataset/labels and kwargs
         theta, theta_0 =  classifier(train_feature_matrix, train_labels, **kwargs)
-    
+
         #
         # use theta and theta_0
         # to get the array of predictions for training and validation set
@@ -397,6 +397,7 @@ def extract_words(text):
 
 
 
+
 def bag_of_words(texts, remove_stopword=False):
     """
     NOTE: feel free to change this code as guided by Section 3 (e.g. remove
@@ -410,11 +411,20 @@ def bag_of_words(texts, remove_stopword=False):
     """
     # Your code here
     indices_by_word = {}  # maps word to unique index
+    #
+    # getting a list of stop words
+    with open('stopwords.txt') as f:
+        stopwords = [x.strip() for x in f.readlines()]
+
     for text in texts:
         word_list = extract_words(text)
         for word in word_list:
+            #
+            # if we have the word already we skipt it
             if word in indices_by_word: continue
-          #  if word in stopword: continue
+            #
+            # if the word is a stop word, we also skip it
+            if remove_stopword and word in stopwords: continue
             indices_by_word[word] = len(indices_by_word)
 
     return indices_by_word
@@ -440,10 +450,10 @@ def extract_bow_feature_vectors(reviews, indices_by_word, binarize=True):
             feature_matrix[i, indices_by_word[word]] += 1
     if binarize:
         #
-        # Here we want to implement hot encoding, i.e. 
-        # the presence of a word is going to be marked as a 1 
+        # Here we want to implement hot encoding, i.e.
+        # the presence of a word is going to be marked as a 1
         # the absence of a word is going to be marked as a 0
-        feature_matrix = np.where(feature_matrix > 0, 1, 0)    
+        feature_matrix = np.where(feature_matrix > 0, 1, 0)
     return feature_matrix
 
 
