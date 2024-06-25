@@ -223,14 +223,16 @@ def pegasos_single_step_update(
     # 
     # This algorithm is part of stochastic gradient descent algorithms
     score = label * (theta.dot(feature_vector) + theta_0)
-    if score <= 1:
+    #
+    # to avoid math fluctuations around zero we keep a very small margin Epsilon (in this case it's 0.0000001 added to 1)
+    if score <= 1.0000001:
         new_theta = (1 - L*eta) * theta + eta * label * feature_vector
         new_theta_0 = theta_0 + eta * label
     else:
         new_theta =  (1 - L*eta) * theta
         new_theta_0 = theta_0
     #
-    return (new_theta,round(new_theta_0,7))
+    return (new_theta,round(new_theta_0,8))
 
 
 def pegasos(feature_matrix, labels, T, L):
@@ -313,8 +315,19 @@ def classify(feature_matrix, theta, theta_0):
         given theta and theta_0. If a prediction is GREATER THAN zero, it
         should be considered a positive classification.
     """
-    # Your code here
-    raise NotImplementedError
+    # we run the dot product of each row in the feature matrix with theta and add theta_0
+    #dot_products = feature_matrix.dot(theta) + theta_0
+    # Apply the linear classifier decision rule
+    # classifications = np.where(dot_products > 0, 1, -1)    
+    # return classifications    
+    dot_products = []
+    for v in feature_matrix:
+        if (v.dot(theta) + theta_0) > 0.0000001:
+            dot_products.append(1)
+        else:    
+            dot_products.append(-1)
+    return np.array(dot_products)
+    
 
 
 def classifier_accuracy(
@@ -350,10 +363,23 @@ def classifier_accuracy(
         trained classifier on the training data and the second element is the
         accuracy of the trained classifier on the validation data.
     """
-    # Your code here
-    raise NotImplementedError
-
-
+    try:
+        # Call the classifier with the train dataset/labels and kwargs
+        theta, theta_0 =  classifier(train_feature_matrix, train_labels, **kwargs)
+    
+        #
+        # use theta and theta_0
+        # to get the array of predictions for training and validation set
+        predicted_training_set = classify(train_feature_matrix, theta, theta_0)
+        predicted_validation_set = classify(val_feature_matrix, theta, theta_0)
+        #
+        # returns the accuracy on the training and validation set as a tuple
+        train_accuracy = accuracy(predicted_training_set,train_labels)
+        val_accuracy = accuracy(predicted_validation_set,val_labels)
+        return (train_accuracy,val_accuracy)
+    except Exception as e:
+       print(e)
+       return (0,0)
 
 def extract_words(text):
     """
@@ -364,8 +390,6 @@ def extract_words(text):
         a list of lowercased words in the string, where punctuation and digits
         count as their own words.
     """
-    # Your code here
-    raise NotImplementedError
 
     for c in punctuation + digits:
         text = text.replace(c, ' ' + c + ' ')
@@ -385,14 +409,12 @@ def bag_of_words(texts, remove_stopword=False):
         integer `index`.
     """
     # Your code here
-    raise NotImplementedError
-
     indices_by_word = {}  # maps word to unique index
     for text in texts:
         word_list = extract_words(text)
         for word in word_list:
             if word in indices_by_word: continue
-            if word in stopword: continue
+          #  if word in stopword: continue
             indices_by_word[word] = len(indices_by_word)
 
     return indices_by_word
@@ -417,8 +439,11 @@ def extract_bow_feature_vectors(reviews, indices_by_word, binarize=True):
             if word not in indices_by_word: continue
             feature_matrix[i, indices_by_word[word]] += 1
     if binarize:
-        # Your code here
-        raise NotImplementedError
+        #
+        # Here we want to implement hot encoding, i.e. 
+        # the presence of a word is going to be marked as a 1 
+        # the absence of a word is going to be marked as a 0
+        feature_matrix = np.where(feature_matrix > 0, 1, 0)    
     return feature_matrix
 
 
